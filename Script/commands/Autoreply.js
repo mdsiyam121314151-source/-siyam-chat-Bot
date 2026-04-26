@@ -21,101 +21,166 @@ module.exports.handleEvent = async function ({ api, event }) {
   const msg = body.toLowerCase().trim();
 
   const responses = {
-    "কেমন আছো": "😂💞 আলহামদুলিল্লাহ ভালো জান..? আমার বস সিয়াম কে হাঙ্গা করবা নাকি 😜📲🤣 আগে ফেসবুকে নক দাও—দেখি কত সাহস তোমার 😏👻😘[https://facebook.com/61560326905548]",
+
+    "কেমন আছো": `
+😂💞 আলহামদুলিল্লাহ ভালো জান..?
+😜📲 আমার বস সিয়াম কে হাঙ্গা করবা নাকি!
+😏👻 আগে ফেসবুকে নক দাও—
+😘 https://facebook.com/61560326905548
+`,
+
     "": "হুম আমি ও তোমাকে Miss করি... কিন্তু সাহু বস বেশি করে 😏💖",
-    "kiss me": "কিস দিস না তোর মুখে দূর গন্ধ কয়দিন ধরে দাঁত ব্রাশ করিস নাই🤬 [:/https/facebook.com/61560326905548]",
-    "👍": "😎🚫 সিয়াম বস গ্রুপে হাত মারতে মানা করছে ..!🐸🤣👍⛏️ [:/https/facebook.com/61560326905548]",
-    "hi", "হাই": "এত হাই-হ্যালো কর ক্যান প্রিও..!😜🫵 [:/https/facebook.com/61560326905548]",
-    "বস": "👑🔥 𝑴𝒚 𝑩𝒐𝒔𝒔 𝑺𝒊𝒚𝒂𝒎 😎💎",
-    "ভার্চুয়াল কিং": "😏👑 ভার্চুয়াল টপ কিং—আমার বস সিয়াম 🔥💎 😈⚡ তুই তো ওর লেভেলেই নাই 💥 🤨🔥 আবার কেমনে বলোস 👀 🚫😤 যা ভাগ 😏 [https://facebook.com/61560326905548]",
-    "good morning": "GOOD MORNING দাত ব্রাশ করে খেয়ে নেও😚[https://facebook.com/61560326905548]",
-    "good night": "Sweet Dream babu… তবে আগে সিয়াম বস কে GN বলে নিও 😏💤 [https://facebook.com/61560326905548]",
-    "tor ball": "~ এখনো বাল উঠে নাই নাকি তোমার?? 🤖[https://facebook.com/61560326905548]",
-    "siyam": "উনি এখন কাজে বিজি আছে কি বলবেন আমাকে বলতে পারেন..!😘 না হলে ইনবক্সে নক দিয়ে রাখো...[https://facebook.com/61560326905548]",
-    "owner": "‎[𝐎𝐖𝐍𝐄𝐑:☞ 𝆠፝𝐒𝐈𝐘𝐀𝐌-𝐇𝐀𝐒𝐀𝐍 ☜\nFacebook: [https://facebook.com/61560326905548]\nWhatsApp: +8801789138157",
-    "admin": "He is 𝆠፝𝐒𝐈𝐘𝐀𝐌-𝐇𝐀𝐒𝐀𝐍 তাকে সবাই Admin 𝆠𝆠፝𝐒𝐈𝐘𝐀𝐌- হিসেবে চিনে😘☺️[https://facebook.com/61560326905548]",
-    "😁": "😂😄 এত হাসো কেন জান..? 😏✨ তোমার সব দাঁত দেখা যাচ্ছে! 🙈💫 এত না হেসে… 💋👑 আমার বস 𝆠፝𝐒𝐈𝐘𝐀𝐌- কে একটা উম্মাহ্ দাও 😘🔥. [https://facebook.com/61560326905548]",
-    "chup": "তুই চুপ চুপ কর পাগল ছাগল 😏🔥 না, আমি চুপ করবো না…👑 💥 তুমি আমার বস 𝆠፝𝐒𝐈𝐘𝐀𝐌-কে… 💔😤 প্রেম করাই দাওনি! [https://facebook.com/61560326905548]",
-    "Assalamualaikum": "Walaikumassalam❤️‍🩹",
-    "fork": "🤗এই নাও ফেইসবুক লিংক ফলো করে আসো 🪬-[https://facebook.com/61560326905548] fork👉 https://github.com/mdsiyam01325251695016080-maker/siyam-Hassan-.git",
-    "kiss me": "তুমি পঁচা তোমাকে কিস দিবো না 🤭 [https://facebook.com/61560326905548]",
-    "thanks": "এতো ধন্যবাদ না দিয়ে আমার বস সিয়াম রে তোর গার্লফ্রেন্ড টা দিয়ে দে..!🐸🥵[https://facebook.com/61560326905548]",
-    "i love you": "মেয়ে হলে আমার বস সাহু এর ইনবক্সে এখুনি গুঁতা দিন🫢😻",
-    "love you": "ভালোবাসা নামক আবলামী করতে চাইলে Boss সাহু এর ইনবক্সে গুতা দিন 😘",
-    "by": "কিরে তুই কই যাস কোন মেয়ের সাথে চিপায় যাবি..!🌚🌶️",
-    "ami shahadat": "হ্যা বস কেমন আছেন..?☺️",
-    "bot er baccha": "আমার বাচ্চা তো তোমার গার্লফ্রেন্ডের পেটে..!!🌚⛏️",
-    "tor nam ki": "MY NAME IS ─꯭─⃝‌‌𝐒𝐡𝐚𝐡𝐚𝐝𝐚𝐭 𝐂𝐡𝐚𝐭 𝐁𝐨𝐭💖",
-    "pic de": "এন থেকে সর দুরে গিয়া মর😒",
-    "cudi": "এত চোদা চুদি করস কেনো..!🥱🌝🌚",
-    "bal": "রাগ করে না সোনা পাখি 🥰",
-    "heda": "এতো রাগ শরীরের জন্য ভালো না 🥰",
-    "boda": "ভাই তুই এত হাসিস না..!🌚🤣",
-    "kire ki koros": "তোমার কথা ভাবতে ছি জানু 😚",
-    "ki koros": "বস সাহু এর সাথে প্রেমে ব্যস্ত আছি 😏💘",
-    "kire bot": "হ্যাঁ সব কেমন আছেন আপনার ওই খানে উম্মাহ 😘😽🙈",
-    "valo aso": "হ্যাঁ রে প্রিও, বস সাহু এর দোয়ায় ভালো আছি 😌💞",
-    "pagol": "হুম পাগল, কিন্তু তোমারই পাগল 😏😂",
-    "breakup": "চিন্তা করিস না… সাহু বস তো আছেই তোকে নতুন জন দিয়া দিবে 😎🔥",
-    "tui ke": "আমি তোর বস সাহু এর ChatBot 😏",
-    "umm": "এতো Umm কেনো জানু… কিছু বলবা? 😉",
-    "hmm": "Hmmm কিসের হুমম জানু 🥵",
-    "love": "Love করলে সরাসরি সাহু বস কে বল জানু 😻🔥"
+
+    "kiss me": `
+🤬 কিস দিস না!
+😷 তোর মুখে দূর গন্ধ!
+🪥 দাঁত ব্রাশ কর আগে!
+👉 https://facebook.com/61560326905548
+`,
+
+    "👍": `
+😎🚫 সিয়াম বস গ্রুপে হাত মারতে মানা করছে..!
+🐸🤣 বুঝছস তো?
+👉 https://facebook.com/61560326905548
+`,
+
+    "hi": `
+😜 এত হাই-হ্যালো কর ক্যান প্রিও!
+🫵 একটু থামো তো!
+👉 https://facebook.com/61560326905548
+`,
+
+    "হাই": `
+😜 এত হাই-হ্যালো কর ক্যান প্রিও!
+🫵 একটু থামো তো!
+👉 https://facebook.com/61560326905548
+`,
+
+    "বস": `
+👑🔥 𝑴𝒚 𝑩𝒐𝒔𝒔 𝑺𝒊𝒚𝒂𝒎
+😎💎 একটাই বস!
+`,
+
+    "ভার্চুয়াল কিং": `
+😏👑 ভার্চুয়াল টপ কিং—আমার বস সিয়াম
+🔥💎 তুই তো ওর লেভেলেই নাই!
+🚫😤 যা ভাগ!
+👉 https://facebook.com/61560326905548
+`,
+
+    "good morning": `
+🌞 GOOD MORNING
+🪥 আগে দাঁত ব্রাশ কর!
+😚 তারপর খাও!
+👉 https://facebook.com/61560326905548
+`,
+
+    "good night": `
+💤 Sweet Dream babu…
+😏 আগে সিয়াম বস কে GN বল!
+👉 https://facebook.com/61560326905548
+`,
+
+    "siyam": `
+👑 উনি এখন বিজি আছে!
+😘 যা বলবা আমাকে বলো…
+📲 না হলে ইনবক্সে নক দাও
+👉 https://facebook.com/61560326905548
+`,
+
+    "owner": `
+👑 𝆠፝𝐒𝐈𝐘𝐀𝐌-𝐇𝐀𝐒𝐀𝐍
+📘 Facebook:
+👉 https://facebook.com/61560326905548
+📞 +8801789138157
+`,
+
+    "admin": `
+😎 He is 𝆠፝𝐒𝐈𝐘𝐀𝐌-𝐇𝐀𝐒𝐀𝐍
+👑 সবাই তাকে Admin হিসেবে চেনে!
+👉 https://facebook.com/61560326905548
+`,
+
+    "😁": `
+😂 এত হাসো কেন জান..?
+😏 সব দাঁত দেখা যাচ্ছে!
+💋 একটা উম্মাহ দাও বসকে!
+👉 https://facebook.com/61560326905548
+`,
+
+    "chup": `
+😏 তুই চুপ কর?
+🔥 না, আমি চুপ করবো না!
+💔 বসকে প্রেম করাই দাওনি!
+👉 https://facebook.com/61560326905548
+`,
+
+    "Assalamualaikum": `
+❤️‍🩹 Walaikumassalam
+👉 https://facebook.com/61560326905548
+`,
+
+    "thanks": `
+🐸🥵 এত ধন্যবাদ না দিয়ে…
+😏 তোর গার্লফ্রেন্ড বসকে দে!
+👉 https://facebook.com/61560326905548
+`,
+
+    "i love you": `
+😻 মেয়ে হলে বস 𝐒𝐈𝐘𝐀𝐌 এর ইনবক্সে যাও!
+👉 https://facebook.com/61560326905548
+`,
+
+    "by": `
+🌚 কোথায় যাস?
+🌶️ কোনো মেয়ের সাথে চিপায়?
+👉 https://facebook.com/61560326905548
+`,
+
+    "🤣": `
+🌚 ভাই এত হাসিস না!
+🤣 একটু থাম!
+`,
+
+    "বট ফট": `
+😏 বট ফট বলস?
+🤣 কেরে অপমান করছিস!
+🤖 সাবধানে কথা বল ভাই!
+👉 https://facebook.com/61560326905548
+`,
+
+    "কিরে বট": `
+😽 হ্যাঁ বলো…
+😘 উম্মাহ নাও আগে!
+👉 https://facebook.com/61560326905548
+`
   };
 
-  if (!responses[msg]) return;
+  // 🔥 ALIAS SYSTEM
+  const aliases = {
+    "hi": ["hi", "hii", "hello", "hey", "হাই"],
+    "কিরে বট": ["কিরে বট", "kire bot", "bot"],
+    "siyam": ["siyam", "siam", "সিয়াম"],
+    "good morning": ["good morning", "gm"],
+    "good night": ["good night", "gn"],
+    "thanks": ["thanks", "thank you"],
+    "i love you": ["i love you", "love you"],
+    "Assalamualaikum": ["assalamualaikum", "aslamu"]
+  };
 
-  if (!global.client.handleReply) global.client.handleReply = [];
+  let key = null;
 
-  return api.sendMessage(
-    responses[msg],
-    threadID,
-    (err, info) => {
-      global.client.handleReply.push({
-        name: this.config.name,
-        messageID: info.messageID,
-        author: senderID,
-        type: "sahu"
-      });
-    },
-    messageID
-  );
-};
-
-module.exports.handleReply = async function ({ api, event, handleReply }) {
-  if (event.senderID !== handleReply.author) return;
-
-  try {
-    const text = event.body.trim();
-
-    const base = await getMainAPI();
-    const link = `${base}/simsimi?text=${encodeURIComponent(text)}`;
-
-    const res = await axios.get(link);
-
-    const reply = Array.isArray(res.data.response)
-      ? res.data.response[0]
-      : res.data.response;
-
-    if (!global.client.handleReply) global.client.handleReply = [];
-
-    return api.sendMessage(
-      reply,
-      event.threadID,
-      (err, info) => {
-        global.client.handleReply.push({
-          name: module.exports.config.name,
-          messageID: info.messageID,
-          author: event.senderID,
-          type: "sahu"
-        });
-      },
-      event.messageID
-    );
-
-  } catch {
-    return api.sendMessage("🙂 একটু পরে আবার বলো", event.threadID, event.messageID);
+  for (const main in aliases) {
+    if (aliases[main].includes(msg)) {
+      key = main;
+      break;
+    }
   }
+
+  if (!key && responses[msg]) key = msg;
+  if (!key) return;
+
+  return api.sendMessage(responses[key], threadID, messageID);
 };
 
 module.exports.run = async function ({ api, event }) {
