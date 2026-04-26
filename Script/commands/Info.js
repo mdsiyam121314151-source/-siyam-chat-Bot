@@ -1,84 +1,109 @@
+const moment = require("moment-timezone");
+const fs = require("fs-extra");
+const request = require("request");
+
 module.exports.config = {
- name: "info",
- version: "1.0.0",
- hasPermssion: 0,
- credits: "SHAHADAT SAHU",
- description: "Bot information command",
- commandCategory: "For users",
- hide: true,
- usages: "",
- cooldowns: 5,
+  name: "info",
+  version: "2.6.0",
+  hasPermssion: 0,
+  credits: "FARHAN-KHAN",
+  description: "Owner & bot information",
+  commandCategory: "owner",
+  usages: "",
+  cooldowns: 20
 };
 
-module.exports.run = async function ({ api, event, args, Users, Threads }) {
- const { threadID } = event;
- const request = global.nodemodule["request"];
- const fs = global.nodemodule["fs-extra"];
- const moment = require("moment-timezone");
+module.exports.run = async function ({ api, event }) {
 
- const { configPath } = global.client;
- delete require.cache[require.resolve(configPath)];
- const config = require(configPath);
+  const { threadID, messageID } = event;
 
- const { commands } = global.client;
- const threadSetting = (await Threads.getData(String(threadID))).data || {};
- const prefix = threadSetting.hasOwnProperty("PREFIX") ? threadSetting.PREFIX : config.PREFIX;
+  // ✅ AUTO CREATE CACHE FOLDER
+  const cachePath = __dirname + "/cache";
+  if (!fs.existsSync(cachePath)) {
+    fs.mkdirSync(cachePath, { recursive: true });
+  }
 
- const uptime = process.uptime();
- const hours = Math.floor(uptime / 3600);
- const minutes = Math.floor((uptime % 3600) / 60);
- const seconds = Math.floor(uptime % 60);
+  // ================= OWNER INFO =================
+  const ownerName = "UDAY HASAN SIYAM";
+  const ownerAge = "17+";
+  const ownerFB = "[https://facebook.com/61560326905548]";
+  const ownerNumber = "+8801789138157";
 
- const totalUsers = global.data.allUserID.length;
- const totalThreads = global.data.allThreadID.length;
+  // ================= BOT INFO =================
+  const botName = global.config.BOTNAME || "NIJHUM";
+  const prefix = global.config.PREFIX || ".";
+  const totalCommands = global.client.commands.size;
 
- const msg = `╭⭓ ⪩ 𝐁𝐎𝐓𝐓 𝐈𝐍𝐅𝐎𝐑𝐌𝐀𝐓𝐈𝐎𝐍 ⪨
-│
-├─ 🤖 𝗕𝗼𝘁 𝗡𝗮𝗺𝗲 : ─꯭─⃝‌‌𝐒𝐡𝐚𝐡𝐚𝐝𝐚𝐭 𝐂𝐡𝐚𝐭 𝐁𝐨𝐭
-├─ ☢️ 𝗣𝗿𝗲𝗳𝗶𝘅 : ${config.PREFIX}
-├─ ♻️ 𝗣𝗿𝗲𝗳𝗶𝘅 𝗕𝗼𝘅 : ${prefix}
-├─ 🔶 𝗠𝗼𝗱𝘂𝗹𝗲𝘀 : ${commands.size}
-├─ 🔰 𝗣𝗶𝗻𝗴 : ${Date.now() - event.timestamp}ms
-│
-╰───────⭓
+  // ================= TIME =================
+  const now = moment().tz("Asia/Dhaka");
+  const date = now.format("MMMM Do YYYY");
+  const time = now.format("h:mm:ss A");
 
-╭⭓ ⪩ 𝗢𝗪𝗡𝗘𝗥 𝗜𝗡𝗙𝗢 ⪨
-│
-├─ 👑 𝗡𝗮𝗺𝗲 : 𝐒𝐡𝐚𝐡𝐚𝐝𝐚𝐭 𝐈𝐬𝐥𝐚𝐦
-├─ 📲 𝗙𝗮𝗰𝗲𝗯𝗼𝗼𝗸 :
-│ facebook.com/61575698041722
-├─ 💌 𝗠𝗲𝘀𝘀𝗲𝗻𝗴𝗲𝗿 :
-│ m.me/61575698041722
-├─ 📞 𝗪𝗵𝗮𝘁𝘀𝗔𝗽𝗽 :
-│ wa.me/+8801882333052
-│
-╰───────⭓
+  // ================= UPTIME =================
+  const uptime = process.uptime();
+  const days = Math.floor(uptime / 86400);
+  const hours = Math.floor((uptime % 86400) / 3600);
+  const minutes = Math.floor((uptime % 3600) / 60);
+  const seconds = Math.floor(uptime % 60);
+  const uptimeString = `${days}d ${hours}h ${minutes}m ${seconds}s`;
 
-╭⭓ ⪩ 𝗔𝗖𝗧𝗜𝗩𝗜𝗧𝗜𝗘𝗦 ⪨
-│
-├─ ⏳ 𝗔𝗰𝘁𝗶𝘃𝗲 𝗧𝗶𝗺𝗲 : ${hours}h ${minutes}m ${seconds}s
-├─ 📣 𝗚𝗿𝗼𝘂𝗽𝘀 : ${totalThreads}
-├─ 🧿 𝗧𝗼𝘁𝗮𝗹 𝗨𝘀𝗲𝗿𝘀 : ${totalUsers}
-╰───────⭓
+  // ================= MEDIA =================
+  const imgLink = "https://files.catbox.moe/8f2fc5.mp4";
+  const filePath = cachePath + "/info.mp4";
 
-❤️ 𝗧𝗵𝗮𝗻𝗸𝘀 𝗳𝗼𝗿 𝘂𝘀𝗶𝗻𝗴 🌺
- 😍─꯭─⃝‌‌𝐒𝐡𝐚𝐡𝐚𝐝𝐚𝐭 𝐂𝐡𝐚𝐭 𝐁𝐨𝐭😘`;
+  const callback = () => {
+    api.sendMessage({
+      body: `⋆✦⋆⎯⎯⎯⎯⎯⎯⎯⎯⎯⋆✦⋆
+‎    ╭•┄┅══❁🌺❁══┅┄•╮
+ •—»✨𝗢𝗪𝗡𝗘𝗥 𝗜𝗡𝗙𝗢✨«—•
+‎    ╰•┄┅══❁🌺❁══┅┄•╯
+‎⋆✦⋆⎯⎯⎯⎯⎯⎯⎯⎯⎯⋆✦⋆
 
- const imgLinks = [
- "https://i.imgur.com/zqsuJnX.jpeg",
- "https://i.imgur.com/sxSn1K3.jpeg",
- "https://i.imgur.com/wu0iDqS.jpeg",
- "https://i.imgur.com/Huz3nAE.png"
- ];
+╔══════════════════════╗
+║ 👑 𝗢𝗪𝗡𝗘𝗥 ➤ 𝗨𝗗𝗔𝗬 𝗛𝗔𝗦𝗔𝗡 𝗦𝗜𝗬𝗔𝗠
+║ 🤖 𝗕𝗢𝗧 ➤ ${botName}
+╠══════════════════════╣
+║ 🕌 𝗥𝗘𝗟𝗜𝗚𝗜𝗢𝗡 ➤ 𝗜𝗦𝗟𝗔𝗠
+║ 🎂 𝗔𝗚𝗘 ➤ 𝟭𝟳+
+║ 🚹 𝗚𝗘𝗡𝗗𝗘𝗥 ➤ 𝗠𝗔𝗟𝗘
+╠══════════════════════╣
+║ 🌐 𝗙𝗔𝗖𝗘𝗕𝗢𝗢𝗞 ↓
+║ ➤ ${ownerFB}
+║
+║ 📞 𝗪𝗛𝗔𝗧𝗦𝗔𝗣𝗣 ↓
+║ ➤ ${ownerNumber}
+╠══════════════════════╣
+║ ⚡ 𝗣𝗥𝗘𝗙𝗜𝗫 ➤ ${prefix}
+║ 📦 𝗖𝗢𝗠𝗠𝗔𝗡𝗗𝗦 ➤ ${totalCommands}
+║ 🚀 𝗣𝗜𝗡𝗚 ➤ ${Date.now() - event.timestamp}ms
+╠══════════════════════╣
+║ ⏳ 𝗨𝗣𝗧𝗜𝗠𝗘 ➤ ${uptimeString}
+║ 🕒 𝗧𝗜𝗠𝗘 ➤ ${time}
+║ 📅 𝗗𝗔𝗧𝗘 ➤ ${date}
+╠══════════════════════╣
+║ 🏠 𝗔𝗗𝗗𝗥𝗘𝗦𝗦
+║ ➤ 𝗞𝗜𝗦𝗛𝗢𝗥𝗘𝗚𝗔𝗡𝗝
+║ ➤ 𝗕𝗔𝗡𝗚𝗟𝗔𝗗𝗘𝗦𝗛
+║
+║ 💔 𝗦𝗧𝗔𝗧𝗨𝗦 ➤ 𝗦𝗜𝗡𝗚𝗟𝗘
+║ 🧑‍🎓 𝗪𝗢𝗥𝗞 ➤ 𝗦𝗧𝗨𝗗𝗘𝗡𝗧
+╠══════════════════════╣
 
- const imgLink = imgLinks[Math.floor(Math.random() * imgLinks.length)];
+⊱༅༎😽💚༅༎⊱
+➤ আমি নিজের মতোই চলি 😎  
+➤ আমি কপি না, আমি আলাদা 🔥  
+➤ যারে ভালোবাসি, শেষ পর্যন্ত 🖤  
+⊱༅༎😽💚༅༎⊱
 
- const callback = () => {
- api.sendMessage({
- body: msg,
- attachment: fs.createReadStream(__dirname + "/cache/info.jpg")
- }, threadID, () => fs.unlinkSync(__dirname + "/cache/info.jpg"));
- };
+╠══════════════════════╣
+♡ 𝗧𝗛𝗔𝗡𝗞𝗦 𝗙𝗢𝗥 𝗨𝗦𝗜𝗡𝗚 ♡
+      ♡ 𝗡𝗜𝗝𝗛𝗨𝗠 𝗕𝗢𝗧 ♡
+╚══════════════════════╝`,
+      attachment: fs.createReadStream(filePath)
+    }, threadID, () => fs.unlinkSync(filePath), messageID);
+  };
 
- return request(encodeURI(imgLink)).pipe(fs.createWriteStream(__dirname + "/cache/info.jpg")).on("close", callback);
+  return request(encodeURI(imgLink))
+    .pipe(fs.createWriteStream(filePath))
+    .on("close", callback);
 };
