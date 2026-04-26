@@ -51,7 +51,7 @@ Unique • Premium • King Style 👑🔥
  });
 
  // 👉 IMAGE LINK (চাইলে change করতে পারো)
- const imageURL = "https://i.imgur.com/idyXtoO.jpeg";
+ const imageURL = "https://i.imgur.com/Q8IpXi2.jpeg";
 
  // 👉 তোমার দেওয়া VIDEO LINK
  const videoURL = "https://files.catbox.moe/dy5mqr.mp4";
