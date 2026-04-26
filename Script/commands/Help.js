@@ -1,156 +1,206 @@
-const fs = require("fs-extra");
-const request = require("request");
+// author: "SIYAM"
+
+const axios = require("axios");
+const fs = require("fs");
 const path = require("path");
 
-module.exports.config = {
-    name: "help",
-    version: "2.0.0",
-    hasPermssion: 0,
-    credits: "SHAHADAT SAHU",
-    description: "Shows all commands with details",
-    commandCategory: "system",
-    usages: "[command name/page number]",
-    cooldowns: 5,
-    envConfig: {
-        autoUnsend: true,
-        delayUnsend: 20
+let xfont = null;
+let yfont = null;
+let categoryEmoji = null;
+
+// 🎬 VIDEO LINK (UNCHANGED)
+const HELP_GIF = "https://files.catbox.moe/dy5mqr.mp4";
+
+// 🔒 AUTHOR LOCK
+const AUTHOR_NAME = "SIYAM";
+const FILE_PATH = __filename;
+
+function checkAuthorLock() {
+  try {
+    const fileData = fs.readFileSync(FILE_PATH, "utf-8");
+    if (!fileData.includes(`author: "${AUTHOR_NAME}"`)) {
+      console.log("❌ AUTHOR CHANGED! FILE LOCKED.");
+      return false;
     }
-};
-
-module.exports.languages = {
-    "en": {
-        "moduleInfo": `╭━━━━━━━━━━━━━━━━╮
-┃ ✨ 𝐂𝐎𝐌𝐌𝐀𝐍𝐃 𝐈𝐍𝐅𝐎 ✨
-┣━━━━━━━━━━━┫
-┃ 🔖 Name: %1
-┃ 📄 Usage: %2
-┃ 📜 Description: %3
-┃ 🔑 Permission: %4
-┃ 👨‍💻 Credit: %5
-┃ 📂 Category: %6
-┃ ⏳ Cooldown: %7s
-┣━━━━━━━━━━━━━━━━┫
-┃ ⚙ Prefix: %8
-┃ 🤖 Bot Name: %9
-┃ 👑 Owner: 𝐒𝐇𝐀𝐇𝐀𝐃𝐀𝐓 𝐒𝐀𝐇𝐔
-╰━━━━━━━━━━━━━━━━╯`,
-        "helpList": "[ There are %1 commands. Use: \"%2help commandName\" to view more. ]",
-        "user": "User",
-        "adminGroup": "Admin Group",
-        "adminBot": "Admin Bot"
-    }
-};
-
-// 🔹 এখানে আপনার ফটো Imgur লিংক করে বসাবেন ✅
-const helpImages = [
-    "https://i.imgur.com/sxSn1K3.jpeg",
-    "https://i.imgur.com/8WvpgUL.jpeg",
-    "https://i.imgur.com/8WvpgUL.jpeg",
-    "https://i.imgur.com/sxSn1K3.jpeg"
-];
-
-
-function downloadImages(callback) {
-    const randomUrl = helpImages[Math.floor(Math.random() * helpImages.length)];
-    const filePath = path.join(__dirname, "cache", "help_random.jpg");
-
-    request(randomUrl)
-        .pipe(fs.createWriteStream(filePath))
-        .on("close", () => callback([filePath]));
+    return true;
+  } catch {
+    return false;
+  }
 }
 
-module.exports.handleEvent = function ({ api, event, getText }) {
-    const { commands } = global.client;
-    const { threadID, messageID, body } = event;
+// 🔥 AUTO DELETE SYSTEM
+function sendAndDelete(api, msg, threadID) {
+  api.sendMessage(msg, threadID, (err, info) => {
+    if (!err) {
+      setTimeout(() => {
+        api.unsendMessage(info.messageID);
+      }, 180000); // 3 মিনিট
+    }
+  });
+}
 
-    if (!body || typeof body === "undefined" || body.indexOf("help") != 0) return;  
-    const splitBody = body.slice(body.indexOf("help")).trim().split(/\s+/);  
-    if (splitBody.length < 2 || !commands.has(splitBody[1].toLowerCase())) return;  
+// 🔥 LOAD RESOURCES
+async function loadResources() {
+  try {
+    const [x, y, c] = await Promise.all([
+      axios.get("https://raw.githubusercontent.com/Saim-x69x/sakura/main/xfont.json"),
+      axios.get("https://raw.githubusercontent.com/Saim-x69x/sakura/main/yfont.json"),
+      axios.get("https://raw.githubusercontent.com/Saim-x69x/sakura/main/category.json")
+    ]);
+    xfont = x.data;
+    yfont = y.data;
+    categoryEmoji = c.data;
+  } catch {
+    xfont = {};
+    yfont = {};
+    categoryEmoji = {};
+  }
+}
 
-    const threadSetting = global.data.threadData.get(parseInt(threadID)) || {};  
-    const command = commands.get(splitBody[1].toLowerCase());  
-    const prefix = threadSetting.PREFIX || global.config.PREFIX;  
+// 🔥 FONT STYLE
+function fontConvert(text, type = "command") {
+  const map = type === "category" ? xfont : yfont;
+  return text.split("").map(c => map[c] || c).join("");
+}
 
-    const detail = getText("moduleInfo",  
-        command.config.name,  
-        command.config.usages || "Not Provided",  
-        command.config.description || "Not Provided",  
-        command.config.hasPermssion,  
-        command.config.credits || "Unknown",  
-        command.config.commandCategory || "Unknown",  
-        command.config.cooldowns || 0,  
-        prefix,  
-        global.config.BOTNAME || "𝐒𝐡𝐚𝐡𝐚𝐝𝐚𝐭 𝐂𝐡𝐚𝐭 𝐁𝐨𝐭"  
-    );  
+function getCategoryEmoji(cat) {
+  return categoryEmoji?.[cat.toLowerCase()] || "🗂️";
+}
 
-    downloadImages(files => {  
-        const attachments = files.map(f => fs.createReadStream(f));  
-        api.sendMessage({ body: detail, attachment: attachments }, threadID, () => {  
-            files.forEach(f => fs.unlinkSync(f));  
-        }, messageID);  
-    });
+function roleText(role) {
+  const roles = { 0: "User", 1: "Admin Group", 2: "Admin Bot" };
+  return roles[role] || "Unknown";
+}
+
+// 🔥 FIND COMMAND
+function findCommand(name) {
+  name = name.toLowerCase();
+  const commands = global.client.commands;
+
+  for (const [cmdName, cmd] of commands) {
+    if (cmdName === name) return cmd;
+    if (cmd.config.aliases?.includes(name)) return cmd;
+  }
+  return null;
+}
+
+module.exports.config = {
+  name: "help",
+  version: "3.0.0",
+  hasPermssion: 0,
+  credits: "SIYAM EDIT",
+  description: "Premium Help Menu",
+  commandCategory: "system",
+  usages: "[command | -c category]",
+  cooldowns: 5
 };
 
-module.exports.run = function ({ api, event, args, getText }) {
-    const { commands } = global.client;
-    const { threadID, messageID } = event;
+// 🔥 MAIN RUN
+module.exports.run = async function ({ api, event, args, permssion }) {
+  const { threadID, messageID } = event;
 
-    const threadSetting = global.data.threadData.get(parseInt(threadID)) || {};  
-    const prefix = threadSetting.PREFIX || global.config.PREFIX;  
+  if (!checkAuthorLock()) {
+    return sendAndDelete(api, "❌ FILE LOCKED!", threadID);
+  }
 
-    if (args[0] && commands.has(args[0].toLowerCase())) {  
-        const command = commands.get(args[0].toLowerCase());  
+  if (!xfont) await loadResources();
 
-        const detailText = getText("moduleInfo",  
-            command.config.name,  
-            command.config.usages || "Not Provided",  
-            command.config.description || "Not Provided",  
-            command.config.hasPermssion,  
-            command.config.credits || "Unknown",  
-            command.config.commandCategory || "Unknown",  
-            command.config.cooldowns || 0,  
-            prefix,  
-            global.config.BOTNAME || "𝐒𝐡𝐚𝐡𝐚𝐝𝐚𝐭 𝐂𝐡𝐚𝐭 𝐁𝐨𝐭"  
-        );  
+  const prefix = global.config.PREFIX || ",";
+  const commands = global.client.commands;
 
-        downloadImages(files => {  
-            const attachments = files.map(f => fs.createReadStream(f));  
-            api.sendMessage({ body: detailText, attachment: attachments }, threadID, () => {  
-                files.forEach(f => fs.unlinkSync(f));  
-            }, messageID);  
-        });  
-        return;  
-    }  
+  const categories = {};
 
-    const arrayInfo = Array.from(commands.keys())
-        .filter(cmdName => cmdName && cmdName.trim() !== "")
-        .sort();  
+  for (const [name, cmd] of commands) {
+    if (cmd.config.hasPermssion > permssion) continue;
 
-    const page = Math.max(parseInt(args[0]) || 1, 1);  
-    const numberOfOnePage = 20;  
-    const totalPages = Math.ceil(arrayInfo.length / numberOfOnePage);  
-    const start = numberOfOnePage * (page - 1);  
-    const helpView = arrayInfo.slice(start, start + numberOfOnePage);  
+    const cat = (cmd.config.commandCategory || "OTHER").toUpperCase();
 
-    let msg = helpView.map(cmdName => `┃ ✪ ${cmdName}`).join("\n");
+    if (!categories[cat]) categories[cat] = [];
+    categories[cat].push(name);
+  }
 
-    const text = `╭━━━━━━━━━━━━━━━━╮
-┃ 📜 𝐂𝐎𝐌𝐌𝐀𝐍𝐃 𝐋𝐈𝐒𝐓 📜
-┣━━━━━━━━━━━━━━━┫
-┃ 📄 Page: ${page}/${totalPages}
-┃ 🧮 Total: ${arrayInfo.length}
-┣━━━━━━━━━━━━━━━━┫
-${msg}
-┣━━━━━━━━━━━━━━━━┫
-┃ ⚙ Prefix: ${prefix}
-┃ 🤖 Bot Name: ${global.config.BOTNAME || "𝐒𝐡𝐚𝐡𝐚𝐝𝐚𝐭 𝐂𝐡𝐚𝐭 𝐁𝐨𝐭"}
-┃ 👑 Owner: 𝐒𝐇𝐀𝐇𝐀𝐃𝐀𝐓 𝐒𝐀𝐇𝐔
-╰━━━━━━━━━━━━━━━━╯`;
+  // 📂 CATEGORY VIEW
+  if (args[0] === "-c" && args[1]) {
+    const cat = args[1].toUpperCase();
 
-    downloadImages(files => {  
-        const attachments = files.map(f => fs.createReadStream(f));  
-        api.sendMessage({ body: text, attachment: attachments }, threadID, () => {  
-            files.forEach(f => fs.unlinkSync(f));  
-        }, messageID);  
-    });  
+    if (!categories[cat])
+      return sendAndDelete(api, `❌ Category "${cat}" not found`, threadID);
+
+    let msg = `╭─────✰『 ${getCategoryEmoji(cat)} ${fontConvert(cat, "category")} 』\n`;
+
+    for (const c of categories[cat])
+      msg += `│⚡ ${fontConvert(c)}\n`;
+
+    msg += `╰────────────✰\n`;
+    msg += `> TOTAL: ${categories[cat].length}\n> PREFIX: ${prefix}`;
+
+    const stream = (await axios.get(HELP_GIF, { responseType: "stream" })).data;
+
+    return sendAndDelete(api, {
+      body: msg,
+      attachment: stream
+    }, threadID);
+  }
+
+  // 📜 FULL LIST
+  if (!args[0]) {
+    let msg = `╭───────❁
+│✨ ‿𝐃-𝐒 𝐒𝐈𝐘𝐀𝐌 𝗛𝗘𝗟𝗣 𝗟𝗜𝗦𝗧 ✨
+╰────────────❁
+`;
+
+    for (const cat of Object.keys(categories)) {
+      msg += `╭─────✰『 ${getCategoryEmoji(cat)} ${fontConvert(cat, "category")} 』\n`;
+
+      for (const c of categories[cat])
+        msg += `│⚡ ${fontConvert(c)}\n`;
+
+      msg += `╰────────────✰\n`;
+    }
+
+    const total = Object.values(categories).reduce((a, b) => a + b.length, 0);
+
+    msg += `╭─────✰[🌟 𝐄𝐍𝐉𝐎𝐘 🌟]
+│> TOTAL COMMANDS: [${total}]
+│
+│> TYPE: [ ${prefix}help <command> ]
+│
+│> FB.LINK: [https://facebook.com/61560326905548]
+╰────────────✰
+`;
+
+    msg += `╭─────✰
+│ 💖 𝆠፝𝐒𝐈𝐘𝐀𝐌-𝗕𝗢𝗧 💖
+╰────────────✰`;
+
+    const stream = (await axios.get(HELP_GIF, { responseType: "stream" })).data;
+
+    return sendAndDelete(api, {
+      body: msg,
+      attachment: stream
+    }, threadID);
+  }
+
+  // 🔍 COMMAND INFO
+  const cmd = findCommand(args[0]);
+
+  if (!cmd)
+    return sendAndDelete(api, "❌ Command not found", threadID);
+
+  const c = cmd.config;
+
+  let msg = `╭─── COMMAND INFO ───╮
+🔹 Name : ${c.name}
+📂 Category : ${c.commandCategory}
+👥 Role : ${roleText(c.hasPermssion)}
+📝 Description : ${c.description}
+📖 Usage : ${prefix}${c.name}
+╰──────────────────╯`;
+
+  const stream = (await axios.get(HELP_GIF, { responseType: "stream" })).data;
+
+  return sendAndDelete(api, {
+    body: msg,
+    attachment: stream
+  }, threadID);
 };
