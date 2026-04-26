@@ -1,53 +1,136 @@
-const fs = require("fs-extra");
-const request = require("request");
+const axios = require("axios");
 
-module.exports.config = {
- name: "helpall",
- version: "1.0.0",
- hasPermssion: 0,
- credits: "SHAHADAT SAHU",
- description: "Displays all available commands in one page",
- commandCategory: "system",
- usages: "[No args]",
- cooldowns: 5
-};
+module.exports = {
+  config: {
+    name: "helpall",
+    version: "3.1.0",
+    author: "UDAY HASAN SIYAM",
+    countDown: 5,
+    role: 0,
+    shortDescription: {
+      en: "Show all commands (Mirai Style)"
+    },
+    longDescription: {
+      en: "Display full command list with Mirai design"
+    },
+    category: "system",
+    guide: {
+      en: "{pn}helpall / {pn}helpall <command>"
+    }
+  },
 
-module.exports.run = async function ({ api, event }) {
- const { commands } = global.client;
- const { threadID, messageID } = event;
+  onStart: async function ({ message, args, event, role }) {
 
- const allCommands = [];
+    const prefix = global.GoatBot.config.prefix;
+    const groupName = event.threadName || "UNKNOWN GROUP";
 
- for (let [name] of commands) {
- if (name && name.trim() !== "") {
- allCommands.push(name.trim());
- }
- }
+    // ✅ ONLY YOUR IMAGE
+    const mediaLinks = [
+      "https://files.catbox.moe/69brrg.jpg"
+    ];
 
- allCommands.sort();
+    const { commands, aliases } = global.GoatBot;
 
- const finalText = `╔═══❖ 🌟 𝐂𝐎𝐌𝐌𝐀𝐍𝐃 𝐋𝐈𝐒𝐓 🌟 ❖═══╗
-${allCommands.map(cmd => `║ ➔ ${cmd}`).join("\n")}
-╠═════🔰 𝐁𝐎𝐓 𝐈𝐍𝐅𝐎 🔰═════╣
-║ 🤖 𝐁𝐨𝐭: ─꯭─⃝‌‌𝐒𝐡𝐚𝐡𝐚𝐝𝐚𝐭 𝐂𝐡𝐚𝐭 𝐁𝐨𝐭
-║ 👑 𝐎𝐰𝐧𝐞𝐫: 𝐒𝐇𝐀𝐇𝐀𝐃𝐀𝐓 𝐒𝐀𝐇𝐔
-║ 📦 𝐂𝐨𝐦𝐦𝐚𝐧𝐝𝐬: ${allCommands.length} 
-╚═══════════════════════╝`;
+    // 🔥 MAIN MENU
+    if (!args[0]) {
 
- 
- const backgrounds = [
- "https://i.imgur.com/wu0iDqS.jpeg",
- "https://i.imgur.com/zqsuJnX.jpeg",
- "https://i.imgur.com/Huz3nAE.png",
- "https://i.imgur.com/wu0iDqS.jpeg"
- ];
- const selectedBg = backgrounds[Math.floor(Math.random() * backgrounds.length)];
- const imgPath = __dirname + "/cache/helpallbg.jpg";
+      let msg = `
+╔═══❖ 🌟 𝐌𝐈𝐑𝐀𝐈 𝐇𝐄𝐋𝐏 𝐌𝐄𝐍𝐔 🌟 ❖═══╗
 
- const callback = () =>
- api.sendMessage({ body: finalText, attachment: fs.createReadStream(imgPath) }, threadID, () => fs.unlinkSync(imgPath), messageID);
+👑 GROUP : ${groupName}
+⚙️ PREFIX : ${prefix}
 
- request(encodeURI(selectedBg))
- .pipe(fs.createWriteStream(imgPath))
- .on("close", () => callback());
+╠═══════════════════════╣
+`;
+
+      const categories = {};
+
+      for (const [name, cmd] of commands) {
+        if (!cmd.config || cmd.config.role > role) continue;
+
+        const category = (cmd.config.category || "OTHER").toUpperCase();
+        if (!categories[category]) categories[category] = [];
+
+        categories[category].push(name);
+      }
+
+      for (const cat of Object.keys(categories).sort()) {
+        msg += `
+╔═❖ ${cat} ❖═╗
+`;
+        for (const name of categories[cat].sort()) {
+          msg += `║ ➤ ${name}\n`;
+        }
+        msg += `╚═══════════════╝\n`;
+      }
+
+      const total = Object.values(categories).reduce((a, b) => a + b.length, 0);
+
+      msg += `
+╠═══════════════════════╣
+📊 TOTAL COMMANDS : ${total}
+
+📖 USE : ${prefix}helpall <command>
+
+👑 OWNER : 𝆠፝𝐒𝐈𝐘𝐀𝐌-𝐇𝐀𝐒𝐀𝐍
+🌐 FB : [https://facebook.com/61560326905548]
+
+╚═══❖ 🌟 END 🌟 ❖═══╝
+`;
+
+      try {
+        const randomLink = mediaLinks[0]; // ✅ FIXED IMAGE
+        const stream = await axios.get(randomLink, { responseType: "stream" }).then(res => res.data);
+
+        return message.reply({
+          body: msg,
+          attachment: stream
+        });
+
+      } catch {
+        return message.reply(msg);
+      }
+    }
+
+    // 🔍 COMMAND INFO
+    const cmdName = args[0].toLowerCase();
+    const cmd = commands.get(cmdName) || commands.get(aliases.get(cmdName));
+
+    if (!cmd) {
+      return message.reply(`❌ Command "${cmdName}" not found`);
+    }
+
+    const cfg = cmd.config;
+
+    const roleText =
+      cfg.role == 0 ? "All Users" :
+      cfg.role == 1 ? "Group Admin" :
+      cfg.role == 2 ? "Bot Admin" : "Unknown";
+
+    const usage = (cfg.guide?.en || "No guide")
+      .replace(/{pn}/g, prefix)
+      .replace(/{n}/g, cfg.name);
+
+    const info = `
+╔═══❖ 🔍 COMMAND INFO ❖═══╗
+
+🔹 NAME : ${cfg.name}
+📂 CATEGORY : ${cfg.category}
+
+📜 DESCRIPTION :
+${cfg.longDescription?.en || "No description"}
+
+⚙️ USAGE :
+${usage}
+
+🔐 PERMISSION : ${roleText}
+🔄 VERSION : ${cfg.version}
+
+👑 AUTHOR : ${cfg.author}
+
+╚═══════════════════════╝
+`;
+
+    return message.reply(info);
+  }
 };
