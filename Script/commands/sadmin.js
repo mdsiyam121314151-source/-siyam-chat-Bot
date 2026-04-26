@@ -1,17 +1,19 @@
 const { writeFileSync, existsSync } = require("fs-extra");
 const { resolve } = require("path");
+const fs = require("fs");
+const axios = require("axios");
 
 module.exports.config = {
-  name: "0admin",
-  version: "2.0.0", //don't change credit
+  name: "sadmin",
+  version: "2.0.0",
   hasPermssion: 2,
-  credits: "SHAHADAT SAHU",
+  credits: "SHAHADAT SAHU + SIYAM EDIT",
   description: "Admin Management System",
   commandCategory: "Admin",
-  usages: "[list | add | remove | only | boxonly] [uid | @mention | reply]",
+  usages: "[list | add | remove | only | boxonly | info]",
   cooldowns: 0,
   usePrefix: true,
-  dependencies: { "fs-extra": "" }
+  dependencies: { "fs-extra": "", "axios": "" }
 };
 
 module.exports.languages = {
@@ -23,7 +25,28 @@ module.exports.languages = {
     adminOnlyOn: "Admin-only mode enabled....🔓",
     adminOnlyOff: "Admin-only mode disabled✅",
     boxOnlyOn: "Group admin-only mode enabled....🔓",
-    boxOnlyOff: "Group admin-only mode disabled✅"
+    boxOnlyOff: "Group admin-only mode disabled✅",
+
+    info: `👑 ╔═━━━💎 𝐏𝐑𝐄𝐌𝐈𝐔𝐌 𝐏𝐑𝐎𝐅𝐈𝐋𝐄 💎━━━═╗ 👑
+
+✨ 𝐍𝐚𝐦𝐞: 𝐔𝐝𝐨𝐲 𝐇𝐚𝐬𝐚𝐧 𝐒𝐢𝐲𝐚𝐦
+🎨 𝐑𝐨𝐥𝐞: 𝐅𝐫𝐨𝐧𝐭 𝐃𝐞𝐬𝐢𝐠𝐧𝐞𝐫 (VIP)
+
+🏡 𝐋𝐨𝐜𝐚𝐭𝐢𝐨𝐧: Kishoreganj, Bangladesh
+🎓 𝐂𝐥𝐚𝐬𝐬: 10
+🎂 𝐀𝐠𝐞: 17+
+🏫 𝐒𝐜𝐡𝐨𝐨𝐥: M A Mannan Manik High School
+💔 𝐒𝐭𝐚𝐭𝐮𝐬: Single
+
+🔗 Facebook:
+facebook.com/61560326905548
+
+📞 Contact:
++8801789138157
+
+💎 Unique • Premium • Different 💎
+
+👑 ╚═━━━💎 𝐒𝐈𝐘𝐀𝐌 𝐁𝐎𝐒𝐒 💎━━━═╝ 👑`
   }
 };
 
@@ -51,6 +74,19 @@ module.exports.run = async function ({ api, event, args, Users, permssion, getTe
   };
 
   switch (args[0]) {
+
+    case "info": {
+      // 👉 এখানে তোমার DIRECT IMAGE LINK বসাও
+      const imgURL = "https://i.imgur.com/PUT_YOUR_DIRECT_LINK.png";
+
+      const stream = (await axios.get(imgURL, { responseType: "stream" })).data;
+
+      return api.sendMessage({
+        body: getText("info"),
+        attachment: stream
+      }, threadID, messageID);
+    }
+
     case "list":
     case "all": {
       const msg = [];
