@@ -3,7 +3,7 @@ const path = require("path");
 
 module.exports.config = {
   name: "filecmd",
-  aliases: ["file"],
+  aliases: ["file2"],
   version: "2.0",
   hasPermssion: 2,
   credits: "FARHAN-KHAN + SIYAM EDIT",
